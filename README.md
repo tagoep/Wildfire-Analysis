@@ -1,5 +1,7 @@
 # U.S. Wildfire Risk Analysis (1992–2015)
 
+🔥 **[Launch Interactive Dashboard](https://tagoep.github.io/Wildfire-Analysis/wildfire_dashboard.html)**
+
 ## Overview
 This project combines exploratory data analysis and actuarial risk 
 methods to analyze 1.88 million U.S. wildfire records from the 
@@ -13,11 +15,11 @@ Wildfires represent one of the fastest-growing natural catastrophe
 perils in the U.S. insurance market. As climate change intensifies 
 fire seasons and urban-wildland interface expansion increases exposure, 
 accurate risk quantification becomes critical for insurers, reinsurers, 
-and public policy makers. This project applies actuarial methods 
-typically used in catastrophe modeling — severity distribution fitting, 
-frequency modeling, pure risk premium estimation, and Value at Risk,  
-to publicly available wildfire data, demonstrating how statistical 
-analysis can inform wildfire risk pricing and management.
+and public policy makers. This project applies actuarial methods typically used in catastrophe 
+modeling — severity distribution fitting, frequency modeling, pure 
+risk premium estimation, and Value at Risk — to publicly available 
+wildfire data, demonstrating how statistical analysis can inform 
+wildfire risk pricing and management.
 
 ## Research Questions
 1. How have U.S. wildfire frequency and total burn area trended from 
@@ -45,17 +47,18 @@ analysis can inform wildfire risk pricing and management.
 ## Methodology
 
 ### Exploratory Data Analysis
+
 | Script | Description |
 |--------|-------------|
 | `01_data_extract.R` | SQLite extraction, cleaning, CSV export |
-| `02_eda_trends.R` | Fire frequency, acres burned, size class, causes, seasonality, state comparisons, human vs lightning |
+| `02_eda_trends.R` | EDA — trends, causes, seasonality, state comparisons, human vs lightning |
 | `04_map.R` | Spatial maps — fire locations, risk heatmap, cause patterns |
 
 ### Actuarial Risk Analysis
+
 | Script | Description |
 |--------|-------------|
 | `03_actuarial_risk.R` | Severity distribution fitting (Lognormal, Weibull), frequency modeling (Poisson vs Negative Binomial), pure risk premium by state, return period curve, Value at Risk |
-
 ## Key Findings
 
 ### Exploratory Findings
@@ -97,6 +100,7 @@ analysis can inform wildfire risk pricing and management.
   Great Plains — requiring distinct pricing and mitigation strategies
 
 ## Model Performance — Severity Distribution Fitting
+
 | Distribution | AIC | BIC | Result |
 |-------------|-----|-----|--------|
 | **Lognormal** | **3,001,653** | **3,001,674** | **Best fit** |
@@ -104,6 +108,7 @@ analysis can inform wildfire risk pricing and management.
 | Gamma | 3,405,182 | 3,405,203 | Third |
 
 ## Frequency Distribution Fitting
+
 | Distribution | AIC | BIC | Result |
 |-------------|-----|-----|--------|
 | **Negative Binomial** | **522** | **525** | **Best fit** |
@@ -157,18 +162,19 @@ analysis can inform wildfire risk pricing and management.
 ## Repository Structure
 ```
 wildfire-eda/
+├── wildfire_dashboard.html     ← interactive dashboard (live)
+├── README.md
+├── LICENSE
 ├── data/
-│   ├── fires_clean.csv         # Cleaned analysis dataset
-│   └── data_source.md          # Download instructions for raw data
+│   ├── fires_sample_10k.csv
+│   └── data_source.md
 ├── scripts/
-│   ├── 01_data_extract.R       # Data extraction and cleaning
-│   ├── 02_eda_trends.R         # EDA — trends, causes, geography
-│   ├── 03_actuarial_risk.R     # Actuarial risk metrics
-│   └── 04_map.R                # Spatial visualization
+│   ├── 01_data_extract.R
+│   ├── 02_eda_trends.R
+│   ├── 03_actuarial_risk.R
+│   └── 04_map.R
 └── outputs/
-    ├── 01–09_*.png             # EDA plots
-    ├── 10–14_*.png             # Actuarial plots
-    ├── 15–17_*.png             # Maps
+    ├── 01–17_*.png
     └── risk_metrics_summary.csv
 ```
 
@@ -208,3 +214,4 @@ East Tennessee State University
 Research interests: Spatio-temporal analysis | Wildfire risk modeling | 
 Actuarial science | Public health data  
 [Medium Blog](https://medium.com/@princesstagoe24) 
+[Interactive Dashboard](https://tagoep.github.io/Wildfire-Analysis/wildfire_dashboard.html)
