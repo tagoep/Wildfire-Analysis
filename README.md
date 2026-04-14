@@ -58,7 +58,12 @@ wildfire risk pricing and management.
 
 | Script | Description |
 |--------|-------------|
-| `03_actuarial_risk.R` | Severity distribution fitting (Lognormal, Weibull), frequency modeling (Poisson vs Negative Binomial), pure risk premium by state, return period curve, Value at Risk |
+| `03_actuarial_risk.R` | Severity distribution fitting — Lognormal, Gamma, Weibull |
+| | Frequency modeling — Poisson vs Negative Binomial |
+| | Pure risk premium estimation by state |
+| | Return period curve for extreme fire years |
+| | Value at Risk — 90th, 95th and 99th percentiles |
+
 ## Key Findings
 
 ### Exploratory Findings
