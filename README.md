@@ -219,4 +219,4 @@ East Tennessee State University
 Research interests: Spatio-temporal analysis | Wildfire risk modeling | 
 Actuarial science | Public health data  
 [Medium Blog](https://medium.com/@princesstagoe24) 
-[Interactive Dashboard](https://tagoep.github.io/Wildfire-Analysis/wildfire_dashboard.html)
+[Interactive Dashboard](https://tagoep.github.io/Wildfire-Analysis/wildfire_dashboard_.html)
