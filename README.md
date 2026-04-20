@@ -213,6 +213,17 @@ trends in Colorado, Montana, Utah, and Wyoming using STAR models
 and kriging methods, available at 
 [ETSU Digital Commons](https://dc.etsu.edu/etd/index.html#year_2026).
 
+
+## Citation
+
+If you use this code or analysis in your research, 
+please cite as:
+
+Tagoe, P. (2026). Wildfire Risk Analysis:
+Spatio-Temporal Analysis of US Historical Wildfire
+Trends with Actuarial Risk Metrics. GitHub repository.
+https://github.com/tagoep/Wildfire-Analysis
+
 ## Author
 **Princess Tagoe**  
 East Tennessee State University  
