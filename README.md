@@ -1,6 +1,6 @@
 # U.S. Wildfire Risk Analysis (1992–2015)
 
-🔥 **[Launch Interactive Dashboard](https://tagoep.github.io/Wildfire-Analysis/wildfire_dashboard.html)**
+🔥 **[Launch Interactive Dashboard](https://tagoep.github.io/Wildfire-Analysis/wildfire_dashboard_.html)**
 
 ## Overview
 This project combines exploratory data analysis and actuarial risk 
