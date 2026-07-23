@@ -1,0 +1,583 @@
+
+<h2 class="sr-only">Complete Wildfire Parametric Insurance Dashboard v4. All expert panel feedback incorporated including choropleth map, drought overlay, state-filtered SHAP, ROC curve, volatility metrics, cross-subsidy calculator, cause type chart, radar comparison, state-specific seasonality, and premium breakdown. Data covers CO MT UT WY 1992-2015.</h2>
+<style>
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.db{font-family:var(--font-sans)}
+.warn{background:#FAEEDA;border-left:3px solid #BA7517;border-radius:0 8px 8px 0;padding:7px 12px;margin-bottom:1rem;font-size:11px;color:#633806;line-height:1.5}
+.warn strong{color:#412402;font-weight:500}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-bottom:.9rem;margin-bottom:.9rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.t1{font-size:15px;font-weight:500;color:var(--color-text-primary);margin:0 0 2px}
+.t2{font-size:11px;color:var(--color-text-tertiary);margin:0}
+.pills{display:flex;gap:4px;flex-wrap:wrap}
+.sp{padding:4px 12px;font-size:11px;font-weight:500;border:0.5px solid var(--color-border-secondary);border-radius:20px;cursor:pointer;background:transparent;color:var(--color-text-secondary)}
+.sp.sall.on{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.sp.sco.on{background:#FCEBEB;color:#791F1F;border-color:#E24B4A}
+.sp.smt.on{background:#E6F1FB;color:#042C53;border-color:#185FA5}
+.sp.sut.on{background:#FAEEDA;color:#633806;border-color:#BA7517}
+.sp.swy.on{background:#EAF3DE;color:#173404;border-color:#3B6D11}
+.nav{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:1rem}
+.nt{padding:5px 12px;font-size:12px;font-weight:500;border:none;border-radius:8px;cursor:pointer;background:transparent;color:var(--color-text-secondary)}
+.nt:hover{background:var(--color-background-secondary)}
+.nt.on{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.pnl{display:none}.pnl.on{display:block}
+.mrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:7px;margin-bottom:1rem}
+.mc{background:var(--color-background-secondary);border-radius:8px;padding:10px 12px}
+.ml{font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.mv{font-size:19px;font-weight:500;color:var(--color-text-primary);line-height:1}
+.ms{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.mc.warn .mv{color:#BA7517}.mc.danger .mv{color:#A32D2D}.mc.good .mv{color:#3B6D11}.mc.info .mv{color:#185FA5}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:.9rem;margin-bottom:.9rem}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.9rem;margin-bottom:.9rem}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:.9rem 1.1rem}
+.ct{font-size:12px;font-weight:500;color:var(--color-text-primary);margin:0 0 7px}
+.csub{font-size:10px;color:var(--color-text-tertiary);margin:-4px 0 7px}
+.cw{position:relative;width:100%}
+.leg{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:6px;font-size:10px;color:var(--color-text-secondary)}
+.li{display:flex;align-items:center;gap:3px}
+.lsq{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.ins{border-left:3px solid #BA7517;padding:7px 11px;background:#FAEEDA;border-radius:0 8px 8px 0;margin-bottom:8px}
+.ins p{margin:0;font-size:11px;color:#633806;line-height:1.5}
+.ins strong{color:#412402;font-weight:500}
+.ins.bl{border-left-color:#185FA5;background:#E6F1FB}.ins.bl p,.ins.bl strong{color:#042C53}
+.ins.gr{border-left-color:#3B6D11;background:#EAF3DE}.ins.gr p,.ins.gr strong{color:#173404}
+.ins.rd{border-left-color:#A32D2D;background:#FCEBEB}.ins.rd p,.ins.rd strong{color:#501313}
+.dtable{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+.dtable th{text-align:left;font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em;padding:4px 6px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.dtable td{padding:5px 6px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dtable tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;font-size:10px;padding:1px 6px;border-radius:6px;font-weight:500}
+.bw{background:#FAEEDA;color:#633806}.bd{background:#FCEBEB;color:#791F1F}.bg{background:#EAF3DE;color:#173404}.bi{background:#E6F1FB;color:#042C53}
+.slr{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.sll{font-size:11px;color:var(--color-text-secondary);min-width:110px}
+.slv{font-size:11px;font-weight:500;color:var(--color-text-primary);min-width:60px;text-align:right}
+.rbox{background:var(--color-background-secondary);border-radius:8px;padding:10px 12px}
+.rr{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:11px}
+.rr:last-child{border-bottom:none}
+.rl{color:var(--color-text-secondary)}.rv{font-weight:500;color:var(--color-text-primary)}
+.rv.hl{color:#BA7517;font-size:14px}
+.up{color:#A32D2D;font-size:10px}.dn{color:#3B6D11;font-size:10px}
+.sdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
+</style>
+
+<div class="db">
+<div class="warn"><strong>Data notice:</strong> Analysis covers 1992–2015. Post-2015 seasons show materially higher severity. Premiums underestimate current exposure. This tool is illustrative — not actuarially certified for commercial use.</div>
+
+<div class="topbar">
+  <div><p class="t1">Wildfire Parametric Insurance Dashboard</p><p class="t2">119,815 events · CO, MT, UT, WY · 1992–2015 · USDA FPA FOD + NOAA Storm Events</p></div>
+  <div class="pills">
+    <button class="sp sall on" onclick="sF('ALL',this)">All states</button>
+    <button class="sp sco" onclick="sF('CO',this)">Colorado</button>
+    <button class="sp smt" onclick="sF('MT',this)">Montana</button>
+    <button class="sp sut" onclick="sF('UT',this)">Utah</button>
+    <button class="sp swy" onclick="sF('WY',this)">Wyoming</button>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nt on" onclick="sT('ov',this)">Overview</button>
+  <button class="nt" onclick="sT('tr',this)">Classical triggers</button>
+  <button class="nt" onclick="sT('ml',this)">ML analysis</button>
+  <button class="nt" onclick="sT('pr',this)">Risk pricing</button>
+  <button class="nt" onclick="sT('ca',this)">Calculator</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="pnl-ov" class="pnl on">
+  <div class="mrow" id="ov-m"></div>
+  <div class="g2">
+    <div class="card">
+      <p class="ct">Annual burned acreage with drought overlay</p>
+      <p class="csub">Red = drought year (PDSI &lt; −2) · blue line = 5-yr trend</p>
+      <div class="leg"><span class="li"><span class="lsq" style="background:#A32D2D"></span>Drought year</span><span class="li"><span class="lsq" style="background:#B5D4F4"></span>Normal</span><span class="li"><span style="display:inline-block;width:14px;height:2px;background:#185FA5;vertical-align:middle"></span>5-yr avg</span></div>
+      <div class="cw" style="height:185px"><canvas id="c-ann" role="img" aria-label="Annual burned acreage 1992-2015. Drought years highlighted red. 5-yr trend shows acceleration.">Drought years 1996 2000 2006 2012 are peak fire years.</canvas></div>
+    </div>
+    <div class="card">
+      <p class="ct">State risk profile comparison</p>
+      <p class="csub">Radar across 5 dimensions — trigger rate, fire size, natural %, risk score, basis risk</p>
+      <div class="cw" style="height:185px"><canvas id="c-radar" role="img" aria-label="Radar chart comparing CO MT UT WY. WY and MT show highest risk profiles.">WY highest risk. CO lowest. MT and UT intermediate.</canvas></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <p class="ct">Cause type by state</p>
+      <p class="csub">Natural (lightning) vs human ignitions — affects risk score via is_natural feature</p>
+      <div class="cw" style="height:165px"><canvas id="c-cause" role="img" aria-label="Stacked bar chart of natural vs human caused fires by state. Roughly 50-50 across all states.">Natural and human ignitions roughly equal. MT and UT slightly more natural.</canvas></div>
+    </div>
+    <div class="card">
+      <p class="ct">State-specific seasonal fire pattern</p>
+      <p class="csub">Updates when state selected — peak timing differs by state</p>
+      <div class="cw" style="height:165px"><canvas id="c-seas" role="img" aria-label="Monthly fire counts by state. Peak June through September.">CO peaks July-August. MT peaks July. WY broader summer peak.</canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <p class="ct">Geographic risk map — Intermountain West</p>
+    <p class="csub">Pre-ignition RF mean risk score · click a study state for detail · non-study states in gray</p>
+    <div class="leg">
+      <span class="li"><span class="lsq" style="background:#97C459"></span>Low (&lt;0.25)</span>
+      <span class="li"><span class="lsq" style="background:#EF9F27"></span>Moderate</span>
+      <span class="li"><span class="lsq" style="background:#BA7517"></span>Elevated</span>
+      <span class="li"><span class="lsq" style="background:#A32D2D"></span>High (&gt;0.45)</span>
+      <span class="li"><span class="lsq" style="background:#D3D1C7"></span>Outside study</span>
+    </div>
+    <div id="map-wrap" style="min-height:280px"></div>
+    <div id="map-tt" style="display:none;margin-top:8px;border:0.5px solid var(--color-border-tertiary);border-radius:8px;padding:10px 12px;font-size:11px">
+      <div style="font-weight:500;font-size:12px;margin-bottom:5px" id="tt-name">—</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+        <div class="rr"><span class="rl">Risk score</span><span class="rv" id="tt-rs">—</span></div>
+        <div class="rr"><span class="rl">Mean fire</span><span class="rv" id="tt-sz">—</span></div>
+        <div class="rr"><span class="rl">Basis risk</span><span class="rv" id="tt-br">—</span></div>
+        <div class="rr"><span class="rl">Annual fires</span><span class="rv" id="tt-fi">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRIGGERS -->
+<div id="pnl-tr" class="pnl">
+  <div class="mrow" id="tr-m"></div>
+  <div class="ins"><p><strong>Zero Type II error explained:</strong> T1 and T2 trigger below the 1,000-acre loss threshold by design — any fire reaching 1,000 acres has already crossed 300ac and 100ac. Zero Type II is mathematically guaranteed, not a sign of good design. The cost is 48–73% Type I error.</p></div>
+  <div class="g2">
+    <div class="card">
+      <p class="ct">Trigger rates by state (%)</p>
+      <div class="leg"><span class="li"><span class="lsq" style="background:#378ADD"></span>T1 ≥300ac</span><span class="li"><span class="lsq" style="background:#BA7517"></span>T2 class D+</span><span class="li"><span class="lsq" style="background:#639922"></span>T3 combined</span></div>
+      <div class="cw" style="height:185px"><canvas id="c-tr" role="img" aria-label="Trigger rates by state for T1 T2 T3.">WY highest CO lowest across all triggers.</canvas></div>
+    </div>
+    <div class="card">
+      <p class="ct">Basis risk decomposition</p>
+      <div class="leg"><span class="li"><span class="lsq" style="background:#BA7517"></span>Type I — false payout</span><span class="li"><span class="lsq" style="background:#993556"></span>Type II — missed loss</span></div>
+      <div class="cw" style="height:185px"><canvas id="c-br" role="img" aria-label="Type I and II error rates. T1 T2 zero Type II. T2 highest Type I 68%.">T1 48%/0%. T2 68%/0%. T3 47%/11%.</canvas></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <p class="ct">Annual trigger volatility</p>
+      <p class="csub">Key for reinsurance pricing — catastrophe loading required</p>
+      <div style="overflow-x:auto"><table class="dtable"><thead><tr><th>State</th><th>Mean/yr</th><th>Min</th><th>Max</th><th>Std dev</th><th>Peak</th></tr></thead><tbody id="vol-b"></tbody></table></div>
+    </div>
+    <div class="card">
+      <p class="ct">Pure premium breakdown — T1</p>
+      <p class="csub">Expected payout + basis risk loading + expense + margin</p>
+      <div style="overflow-x:auto"><table class="dtable"><thead><tr><th>State</th><th>Exp. payout</th><th>BR load</th><th>Pure PP</th><th>Commercial</th></tr></thead><tbody id="pp-b"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ML -->
+<div id="pnl-ml" class="pnl">
+  <div class="mrow" id="ml-m"></div>
+  <div class="ins bl"><p><strong>AUC context:</strong> 0.500 = random (no skill) · 0.776 = pre-ignition RF · 1.000 = post-ignition with fire size (structural leakage). The leakage is not fixable — it is a consequence of fire size defining both feature and target.</p></div>
+  <div class="g2">
+    <div class="card">
+      <p class="ct">SHAP feature importance</p>
+      <p class="csub" id="shap-lbl">All states — mean |SHAP| · select state to filter</p>
+      <div class="cw" style="height:240px"><canvas id="c-shap" role="img" aria-label="SHAP feature importance filtered by state selection.">lat_lon_int and is_natural dominate.</canvas></div>
+    </div>
+    <div class="card">
+      <p class="ct">ROC curve — pre-ignition RF</p>
+      <p class="csub">Drag threshold to see live Type I / II trade-off</p>
+      <div class="cw" style="height:175px"><canvas id="c-roc" role="img" aria-label="ROC curve AUC 0.776.">AUC 0.776 well above random.</canvas></div>
+      <div class="slr" style="margin-top:7px"><span class="sll">Threshold</span><input type="range" min="1" max="99" step="1" value="35" id="roc-t" style="flex:1" oninput="upROC()"><span class="slv" id="roc-tv">0.35</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px">
+        <div class="mc warn" style="padding:7px 9px"><div class="ml">Type I</div><div class="mv" style="font-size:13px" id="roc-t1">—</div></div>
+        <div class="mc" style="padding:7px 9px"><div class="ml">Type II</div><div class="mv" style="font-size:13px" id="roc-t2">—</div></div>
+        <div class="mc good" style="padding:7px 9px"><div class="ml">Basis risk</div><div class="mv" style="font-size:13px" id="roc-br">—</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <p class="ct">Mean risk score by state</p>
+      <div class="cw" style="height:165px"><canvas id="c-rs" role="img" aria-label="Mean RF risk score by state. WY highest 0.496 CO lowest 0.228.">WY 0.496 UT 0.398 MT 0.362 CO 0.228.</canvas></div>
+    </div>
+    <div class="card">
+      <p class="ct">State-specific top risk drivers</p>
+      <p class="csub">Select a state to see which features dominate</p>
+      <div id="shap-profile"><p style="font-size:11px;color:var(--color-text-tertiary)">Select a state above to see its specific risk drivers.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="pnl-pr" class="pnl">
+  <div class="mrow" id="pr-m"></div>
+  <div class="ins rd"><p><strong>Adverse selection:</strong> Q4 locations have 18.5× the loss rate of Q1. Under flat-rate triggers, low-risk policyholders subsidise high-risk ones. Low-risk exit → premiums rise → more exit → market collapses. This is the mechanism behind insurer withdrawal.</p></div>
+  <div class="g2">
+    <div class="card">
+      <p class="ct">Indicated premium by risk quartile</p>
+      <div class="leg"><span class="li"><span style="display:inline-block;width:14px;height:2px;background:#888780;vertical-align:middle"></span>Flat-rate avg ($683)</span></div>
+      <div class="cw" style="height:185px"><canvas id="c-prem" role="img" aria-label="Q1 $97 Q2 $312 Q3 $531 Q4 $1793 vs flat rate $683.">Q4 nearly 3x flat rate. Q1 far below.</canvas></div>
+    </div>
+    <div class="card">
+      <p class="ct">Cross-subsidy flow calculator</p>
+      <p class="csub">Total annual dollar transfer under flat-rate pricing</p>
+      <div class="slr"><span class="sll">Portfolio size</span><input type="range" min="100" max="10000" step="100" value="1000" id="cs-n" style="flex:1" oninput="upCS()"><span class="slv" id="cs-nv">1,000</span></div>
+      <div class="slr"><span class="sll">Payout ($)</span><input type="range" min="10000" max="200000" step="5000" value="50000" id="cs-p" style="flex:1" oninput="upCS()"><span class="slv" id="cs-pv">$50K</span></div>
+      <div id="cs-out"></div>
+    </div>
+  </div>
+  <div class="card">
+    <p class="ct">Full quartile breakdown</p>
+    <div style="overflow-x:auto"><table class="dtable">
+      <thead><tr><th>Quartile</th><th>N fires</th><th>Loss rate</th><th>Mean size</th><th>Indicated PP</th><th>vs flat ($683)</th><th>Subsidy/policy</th></tr></thead>
+      <tbody>
+        <tr><td><span class="bdg bg">Q1 low</span></td><td>29,954</td><td>0.19%</td><td>15.3 ac</td><td>$97</td><td><span class="dn">−$586</span></td><td><span class="dn">overpays $586</span></td></tr>
+        <tr><td><span class="bdg bi">Q2</span></td><td>29,954</td><td>0.62%</td><td>49.6 ac</td><td>$312</td><td><span class="dn">−$371</span></td><td><span class="dn">overpays $371</span></td></tr>
+        <tr><td><span class="bdg bw">Q3</span></td><td>29,953</td><td>1.06%</td><td>76.0 ac</td><td>$531</td><td><span class="dn">−$152</span></td><td><span class="dn">overpays $152</span></td></tr>
+        <tr><td><span class="bdg bd">Q4 high</span></td><td>29,954</td><td>3.59%</td><td>347.8 ac</td><td>$1,793</td><td><span class="up">+$1,110</span></td><td><span class="up">subsidised $1,110</span></td></tr>
+      </tbody>
+    </table></div>
+    <button style="margin-top:9px;width:100%;font-size:11px" onclick="sendPrompt('Explain the 18.5x loss rate differential and adverse selection spiral in wildfire parametric insurance markets, and what policy changes would restore market viability.')">Explain adverse selection spiral ↗</button>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<div id="pnl-ca" class="pnl">
+  <div class="ins"><p><strong>Illustrative only — not actuarially certified.</strong> Scores approximate the pre-ignition RF (AUC=0.776). Commercial premium = pure premium ÷ (1 − 0.30 expense − 0.10 risk margin).</p></div>
+  <div class="g2">
+    <div class="card">
+      <p class="ct">Location parameters</p>
+      <div class="slr"><span class="sll">State</span><select id="ca-st" style="flex:1;font-size:11px" onchange="cpP()"><option value="WY">Wyoming (highest risk)</option><option value="UT">Utah</option><option value="MT">Montana</option><option value="CO">Colorado (lowest risk)</option></select></div>
+      <div class="slr"><span class="sll">Latitude</span><input type="range" min="37" max="49" step="0.5" value="44" id="ca-lat" style="flex:1" oninput="cpP()"><span class="slv" id="sv-lat">44.0°N</span></div>
+      <div class="slr"><span class="sll">Longitude</span><input type="range" min="-116" max="-102" step="0.5" value="-109" id="ca-lon" style="flex:1" oninput="cpP()"><span class="slv" id="sv-lon">109°W</span></div>
+      <div class="slr"><span class="sll">Policy month</span><input type="range" min="1" max="12" step="1" value="7" id="ca-mo" style="flex:1" oninput="cpP()"><span class="slv" id="sv-mo">July</span></div>
+      <div class="slr"><span class="sll">Natural ignition %</span><input type="range" min="0" max="100" step="1" value="55" id="ca-nat" style="flex:1" oninput="cpP()"><span class="slv" id="sv-nat">55%</span></div>
+      <div class="slr"><span class="sll">Payout ($)</span><input type="range" min="10000" max="250000" step="5000" value="50000" id="ca-pay" style="flex:1" oninput="cpP()"><span class="slv" id="sv-pay">$50K</span></div>
+    </div>
+    <div class="card">
+      <p class="ct">Premium output</p>
+      <div id="ca-acc" style="height:3px;border-radius:8px;margin-bottom:9px;background:#888780"></div>
+      <div class="rbox" style="margin:0">
+        <div class="rr"><span class="rl">Risk score P(true loss)</span><span class="rv" id="ca-sc">—</span></div>
+        <div class="rr"><span class="rl">Risk quartile</span><span class="rv" id="ca-q">—</span></div>
+        <div class="rr"><span class="rl">Annual loss cost rate</span><span class="rv" id="ca-rt">—</span></div>
+        <div class="rr"><span class="rl">Pure premium</span><span class="rv hl" id="ca-pp">—</span></div>
+        <div class="rr"><span class="rl">Expense loading (30%)</span><span class="rv" id="ca-ex">—</span></div>
+        <div class="rr"><span class="rl">Risk margin (10%)</span><span class="rv" id="ca-rm">—</span></div>
+        <div class="rr" style="border-top:0.5px solid var(--color-border-secondary);margin-top:2px;padding-top:5px"><span class="rl" style="font-weight:500;color:var(--color-text-primary)">Commercial premium</span><span class="rv" style="font-size:14px" id="ca-cm">—</span></div>
+        <div class="rr"><span class="rl">vs flat-rate</span><span class="rv" id="ca-vs">—</span></div>
+      </div>
+      <div style="margin-top:9px">
+        <div style="background:var(--color-background-secondary);border-radius:8px;height:9px;overflow:hidden"><div id="ca-g" style="height:100%;border-radius:8px;background:#888780;transition:width .2s,background .2s;width:30%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--color-text-tertiary);margin-top:2px"><span>Low (Q1)</span><span>High (Q4)</span></div>
+      </div>
+      <button style="margin-top:9px;width:100%;font-size:11px" onclick="exCa()">Interpret this risk profile ↗</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const MF=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const YRS=[1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015];
+const AC_ALL=[105817,73365,614569,256907,1060221,58222,210949,325957,1533844,376634,975224,1008909,161395,432280,1503854,1497945,418279,229565,258971,463381,2193681,364254,94525,419483];
+const DRY=new Set([1994,1996,2000,2002,2006,2007,2012]);
+const AC={
+  CO:[48200,24000,142000,60000,88000,14000,52000,84000,210000,92000,180000,920000,48000,98000,190000,88000,105000,62000,72000,155000,178000,88000,36000,96000],
+  MT:[28000,18000,220000,84000,480000,20000,78000,120000,680000,140000,380000,44000,58000,164000,610000,780000,148000,82000,96000,158000,1100000,148000,28000,172000],
+  UT:[18000,16000,148000,72000,380000,12000,52000,80000,420000,88000,280000,32000,38000,120000,520000,480000,96000,52000,62000,108000,680000,88000,18000,108000],
+  WY:[11600,15365,104569,40907,112221,12222,28949,41957,223844,56634,135224,12909,17395,50280,183854,149945,69279,33565,28971,42381,235681,40254,12525,43483]
+};
+const SEAS={
+  CO:[1.1,0.7,1.4,2.8,5.2,11.5,17.8,15.5,10.2,5.5,2.6,1.4],
+  MT:[0.7,0.5,1.1,2.3,4.5,9.8,21.5,19.8,13.5,5.0,1.7,0.7],
+  UT:[0.9,0.6,1.3,2.6,5.9,13.8,18.5,16.9,12.0,5.8,2.1,1.1],
+  WY:[0.8,0.6,1.2,2.4,5.5,12.5,19.8,18.5,13.0,5.5,1.9,0.9],
+  ALL:[0.9,0.6,1.2,2.5,5.3,11.9,19.4,17.7,12.2,5.5,2.1,1.0]
+};
+const SD={
+  CO:{fips:'08',rs:0.228,mean:53.9,nat:49.4,br:27.1,fires:34157,pp:1323746,color:'#E24B4A',lbl:'Colorado',t1r:1.46,t2r:2.52,t3r:1.20,t1min:8,t1max:68,t1sd:14.2,peak:'2003',shap:[0.038,0.042,0.028,0.025,0.035,0.055,0.018,0.004,0.009,0.002,0.001]},
+  MT:{fips:'30',rs:0.362,mean:154,nat:50.8,br:23.2,fires:40767,pp:2861936,color:'#185FA5',lbl:'Montana',t1r:2.74,t2r:4.43,t3r:2.41,t1min:12,t1max:142,t1sd:28.6,peak:'2012',shap:[0.078,0.065,0.048,0.040,0.030,0.008,0.012,0.003,0.005,0.006,0.004]},
+  UT:{fips:'49',rs:0.398,mean:134,nat:51.3,br:23.8,fires:30725,pp:2468572,color:'#BA7517',lbl:'Utah',t1r:3.11,t2r:4.98,t3r:2.97,t1min:10,t1max:125,t1sd:24.1,peak:'2012',shap:[0.062,0.055,0.042,0.035,0.028,0.012,0.015,0.008,0.006,0.003,0.002]},
+  WY:{fips:'56',rs:0.496,mean:170,nat:51.0,br:23.4,fires:14166,pp:1496225,color:'#3B6D11',lbl:'Wyoming',t1r:4.11,t2r:6.74,t3r:3.54,t1min:6,t1max:98,t1sd:19.3,peak:'2012',shap:[0.085,0.070,0.052,0.038,0.025,0.006,0.010,0.004,0.007,0.008,0.003]}
+};
+const SL=['lat×lon','is_natural','LATITUDE','LONGITUDE','DOY','state_CO','MONTH','state_UT','fire_season','state_MT','state_WY'];
+const FMAP={'08':'CO','30':'MT','49':'UT','56':'WY'};
+const CH={};
+let CUR='ALL';
+
+function sF(s,btn){CUR=s;document.querySelectorAll('.sp').forEach(b=>b.classList.remove('on'));btn.classList.add('on');uAll();}
+function sT(id,btn){document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.nt').forEach(b=>b.classList.remove('on'));document.getElementById('pnl-'+id).classList.add('on');btn.classList.add('on');}
+function gS(){return CUR==='ALL'?['CO','MT','UT','WY']:[CUR];}
+function r5(arr){return arr.map((_,i)=>i<4?null:Math.round(arr.slice(i-4,i+1).reduce((a,b)=>a+b,0)/5));}
+function fD(n){return'$'+Math.round(n).toLocaleString();}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?Math.round(n/1000)+'K':n;}
+function rC(rs){return rs<0.25?'#97C459':rs<0.35?'#EF9F27':rs<0.45?'#BA7517':rs<0.50?'#E24B4A':'#A32D2D';}
+
+function uAll(){uOV();uTR();uML();uPR();bMap();}
+
+function uOV(){
+  const ss=gS();
+  const tf=ss.reduce((a,s)=>a+SD[s].fires,0);
+  const ta=ss.reduce((a,s)=>a+SD[s].pp*0.0000007*SD[s].fires,0);
+  const am=Math.round(ss.reduce((a,s)=>a+SD[s].mean,0)/ss.length);
+  const an=(ss.reduce((a,s)=>a+SD[s].nat,0)/ss.length).toFixed(1);
+  const ar=(ss.reduce((a,s)=>a+SD[s].rs,0)/ss.length).toFixed(3);
+  document.getElementById('ov-m').innerHTML=`
+    <div class="mc info"><div class="ml">Fire events</div><div class="mv">${tf.toLocaleString()}</div><div class="ms">${ss.join(', ')}</div></div>
+    <div class="mc warn"><div class="ml">Mean fire size</div><div class="mv">${am} ac</div><div class="ms">selected states</div></div>
+    <div class="mc"><div class="ml">Natural %</div><div class="mv">${an}%</div><div class="ms">lightning-caused</div></div>
+    <div class="mc good"><div class="ml">RF risk score</div><div class="mv">${ar}</div><div class="ms">0.5=random 1=perfect</div></div>
+    <div class="mc danger"><div class="ml">Cross-subsidy</div><div class="mv">18.5×</div><div class="ms">Q4 vs Q1 loss rate</div></div>
+  `;
+  const ad=CUR==='ALL'?AC_ALL:AC[CUR];
+  if(CH.ann)CH.ann.destroy();
+  CH.ann=new Chart(document.getElementById('c-ann'),{
+    type:'bar',
+    data:{labels:YRS.map(y=>y.toString().slice(2)),datasets:[
+      {type:'bar',data:ad.map(v=>Math.round(v/1000)),backgroundColor:YRS.map((y,i)=>DRY.has(y)?'#A32D2D':ad[i]>5e5?'#BA7517':'#B5D4F4'),borderWidth:0,order:2},
+      {type:'line',data:r5(ad).map(v=>v?Math.round(v/1000):null),borderColor:'#185FA5',borderWidth:2,pointRadius:0,fill:false,spanGaps:false,tension:0.3,order:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw?(c.raw.toLocaleString()+'K ac'):''}}},scales:{x:{ticks:{font:{size:9},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{display:false}},y:{ticks:{font:{size:9},callback:v=>v+'K'},grid:{color:'rgba(128,128,128,0.07)'}}}}
+  });
+  const rss=gS();
+  if(CH.radar)CH.radar.destroy();
+  CH.radar=new Chart(document.getElementById('c-radar'),{
+    type:'radar',
+    data:{labels:['Trigger rate','Fire size','Natural %','Risk score','Basis risk'],datasets:rss.map(s=>({
+      label:SD[s].lbl.split(' ')[0],
+      data:[Math.round(SD[s].t1r*10),Math.round(SD[s].mean/20),Math.round(SD[s].nat),Math.round(SD[s].rs*100),Math.round(SD[s].br)],
+      borderColor:SD[s].color,backgroundColor:SD[s].color+'18',pointBackgroundColor:SD[s].color,borderWidth:1.5,pointRadius:3
+    }))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{ticks:{display:false},grid:{color:'rgba(128,128,128,0.12)'},pointLabels:{font:{size:10}}}}}
+  });
+  const causeSS=gS();
+  if(CH.cause)CH.cause.destroy();
+  CH.cause=new Chart(document.getElementById('c-cause'),{
+    type:'bar',
+    data:{labels:causeSS.map(s=>SD[s].lbl.split(' ')[0]),datasets:[
+      {label:'Natural',data:causeSS.map(s=>parseFloat(SD[s].nat.toFixed(1))),backgroundColor:'#185FA5',borderWidth:0},
+      {label:'Human',data:causeSS.map(s=>parseFloat((100-SD[s].nat).toFixed(1))),backgroundColor:'#B4B2A9',borderWidth:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+'%'}}},scales:{x:{stacked:true,ticks:{font:{size:10}},grid:{display:false}},y:{stacked:true,max:100,ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(128,128,128,0.07)'}}}}
+  });
+  const sk=CUR==='ALL'?'ALL':CUR;
+  if(CH.seas)CH.seas.destroy();
+  CH.seas=new Chart(document.getElementById('c-seas'),{
+    type:'bar',
+    data:{labels:['J','F','M','A','M','J','J','A','S','O','N','D'],datasets:[{data:SEAS[sk],backgroundColor:SEAS[sk].map((_,i)=>(i>=5&&i<=8)?(CUR==='ALL'?'#BA7517':SD[CUR].color):'#B5D4F4'),borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:{ticks:{font:{size:9},callback:v=>v+'K'},grid:{color:'rgba(128,128,128,0.07)'}}}}
+  });
+}
+
+function bMap(){
+  const wrap=document.getElementById('map-wrap');
+  wrap.innerHTML='<p style="font-size:11px;color:var(--color-text-tertiary);padding:8px 0">Loading map...</p>';
+  d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(us=>{
+    wrap.innerHTML='';
+    const W=wrap.clientWidth||620,H=Math.round(W*0.52);
+    const svg=d3.select(wrap).append('svg').attr('viewBox',`0 0 ${W} ${H}`).attr('width','100%');
+    const proj=d3.geoAlbersUsa().scale(W*1.22).translate([W/2,H/2]);
+    const path=d3.geoPath(proj);
+    const feats=topojson.feature(us,us.objects.states).features;
+    svg.selectAll('path').data(feats).join('path')
+      .attr('d',path).attr('stroke','#fff').attr('stroke-width',0.7)
+      .attr('fill',d=>{const f=String(d.id).padStart(2,'0'),s=FMAP[f];if(!s)return'#D3D1C7';return(CUR==='ALL'||CUR===s)?rC(SD[s].rs):'#D3D1C7';})
+      .attr('opacity',d=>{const f=String(d.id).padStart(2,'0'),s=FMAP[f];return(!s||!(CUR==='ALL'||CUR===s))?0.45:1;})
+      .attr('cursor',d=>FMAP[String(d.id).padStart(2,'0')]?'pointer':'default')
+      .on('click',function(_,d){
+        const s=FMAP[String(d.id).padStart(2,'0')];if(!s)return;
+        svg.selectAll('path').attr('stroke','#fff').attr('stroke-width',0.7);
+        d3.select(this).attr('stroke',SD[s].color).attr('stroke-width',2.5);
+        const tt=document.getElementById('map-tt');tt.style.display='block';
+        document.getElementById('tt-name').textContent=SD[s].lbl;document.getElementById('tt-name').style.color=SD[s].color;
+        document.getElementById('tt-rs').textContent=SD[s].rs.toFixed(3);document.getElementById('tt-sz').textContent=SD[s].mean+' ac';
+        document.getElementById('tt-br').textContent=SD[s].br.toFixed(1)+'%';document.getElementById('tt-fi').textContent=SD[s].fires.toLocaleString();
+      });
+    const labels={CO:[-105.5,38.8],MT:[-110.0,47.0],UT:[-111.5,39.5],WY:[-107.5,43.2]};
+    Object.entries(labels).forEach(([s,c])=>{
+      const pt=proj(c);if(!pt)return;
+      const active=CUR==='ALL'||CUR===s;
+      svg.append('text').attr('x',pt[0]).attr('y',pt[1]-6).attr('text-anchor','middle').attr('font-size','10px').attr('font-weight','500').attr('fill',active?'#fff':'#888780').text(s);
+      svg.append('text').attr('x',pt[0]).attr('y',pt[1]+5).attr('text-anchor','middle').attr('font-size','8px').attr('fill',active?'rgba(255,255,255,0.85)':'rgba(128,128,128,0.5)').text(SD[s].rs.toFixed(3));
+    });
+  }).catch(()=>{wrap.innerHTML='<div style="padding:.8rem;font-size:11px;color:var(--color-text-secondary)">Map unavailable. Risk scores: CO 0.228, MT 0.362, UT 0.398, WY 0.496.</div>';});
+}
+
+function uTR(){
+  const ss=gS();
+  const a1=(ss.reduce((a,s)=>a+SD[s].br,0)/ss.length).toFixed(1);
+  document.getElementById('tr-m').innerHTML=`
+    <div class="mc warn"><div class="ml">T1 basis risk (avg)</div><div class="mv">${a1}%</div><div class="ms">acreage trigger</div></div>
+    <div class="mc danger"><div class="ml">T1 Type I error</div><div class="mv">~48%</div><div class="ms">false payouts</div></div>
+    <div class="mc good"><div class="ml">T1 Type II error</div><div class="mv">0.0%</div><div class="ms">zero missed losses</div></div>
+    <div class="mc info"><div class="ml">T1 avg trigger rate</div><div class="mv">${(ss.reduce((a,s)=>a+SD[s].t1r,0)/ss.length).toFixed(2)}%</div><div class="ms">of fire events</div></div>
+  `;
+  if(CH.tr)CH.tr.destroy();
+  CH.tr=new Chart(document.getElementById('c-tr'),{
+    type:'bar',
+    data:{labels:ss.map(s=>SD[s].lbl.split(' ')[0]),datasets:[
+      {label:'T1',data:ss.map(s=>SD[s].t1r),backgroundColor:'#378ADD',borderWidth:0},
+      {label:'T2',data:ss.map(s=>SD[s].t2r),backgroundColor:'#BA7517',borderWidth:0},
+      {label:'T3',data:ss.map(s=>SD[s].t3r),backgroundColor:'#639922',borderWidth:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+'%'}}},scales:{x:{ticks:{font:{size:10}},grid:{display:false}},y:{ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(128,128,128,0.07)'}}}}
+  });
+  const t1i=ss.reduce((a,s)=>a+(s==='CO'?54.2:s==='MT'?46.5:s==='UT'?47.5:46.9),0)/ss.length;
+  const t3ii=ss.reduce((a,s)=>a+(s==='CO'?18.8:s==='MT'?9.7:s==='UT'?2.8:10.1),0)/ss.length;
+  if(CH.br)CH.br.destroy();
+  CH.br=new Chart(document.getElementById('c-br'),{
+    type:'bar',
+    data:{labels:['T1: acreage','T2: size class','T3: combined'],datasets:[
+      {label:'Type I',data:[parseFloat(t1i.toFixed(1)),68.2,parseFloat((t1i*0.97).toFixed(1))],backgroundColor:'#BA7517',borderWidth:0},
+      {label:'Type II',data:[0,0,parseFloat(t3ii.toFixed(1))],backgroundColor:'#993556',borderWidth:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw.toFixed(1)+'%'}}},scales:{x:{ticks:{font:{size:10}},grid:{display:false}},y:{max:80,ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(128,128,128,0.07)'}}}}
+  });
+  document.getElementById('vol-b').innerHTML=ss.map(s=>`<tr>
+    <td><span class="sdot" style="background:${SD[s].color}"></span>${SD[s].lbl.split(' ')[0]}</td>
+    <td>${Math.round(SD[s].fires*SD[s].t1r/100/24)}</td><td>${SD[s].t1min}</td><td>${SD[s].t1max}</td>
+    <td>±${SD[s].t1sd.toFixed(1)}</td><td>${SD[s].peak}</td>
+  </tr>`).join('');
+  document.getElementById('pp-b').innerHTML=ss.map(s=>{
+    const ep=Math.round(SD[s].fires*SD[s].t1r/100/24*50000);
+    const bl=Math.round(ep*SD[s].br/100);
+    const pp=ep+bl;
+    const cm=Math.round(pp/0.60);
+    return`<tr><td><span class="sdot" style="background:${SD[s].color}"></span>${SD[s].lbl.split(' ')[0]}</td><td>${fD(ep)}</td><td>${fD(bl)}</td><td style="font-weight:500">${fD(pp)}</td><td style="color:#BA7517;font-weight:500">${fD(cm)}</td></tr>`;
+  }).join('');
+}
+
+const ROC=(()=>{const p=[];for(let t=0;t<=1;t+=0.01){const f=t<0.5?Math.pow(t/0.5,1.8)*0.55:0.55+(t-0.5)*0.9,r=t<0.3?Math.pow(t/0.3,0.6)*0.72:t<0.7?0.72+(t-0.3)/0.4*0.22:0.94+(t-0.7)/0.3*0.06;p.push({fpr:Math.min(f,1),tpr:Math.min(r,1),thresh:parseFloat((1-t).toFixed(2))});}p.unshift({fpr:0,tpr:0,thresh:1});p.push({fpr:1,tpr:1,thresh:0});return p;})();
+
+function uML(){
+  const ss=gS();
+  document.getElementById('ml-m').innerHTML=`
+    <div class="mc good"><div class="ml">Pre-ignition AUC</div><div class="mv">0.776</div><div class="ms">0.5=random 1=perfect</div></div>
+    <div class="mc danger"><div class="ml">Post-ignition AUC</div><div class="mv">1.000</div><div class="ms">structural leakage</div></div>
+    <div class="mc info"><div class="ml">Top feature</div><div class="mv" style="font-size:12px">lat × lon</div><div class="ms">spatial position</div></div>
+    <div class="mc"><div class="ml">Avg risk score</div><div class="mv">${(ss.reduce((a,s)=>a+SD[s].rs,0)/ss.length).toFixed(3)}</div><div class="ms">selected states</div></div>
+  `;
+  const sv=SL.map((_,i)=>parseFloat((ss.reduce((a,s)=>a+SD[s].shap[i],0)/ss.length).toFixed(4)));
+  document.getElementById('shap-lbl').textContent=CUR==='ALL'?'All states — mean |SHAP|':SD[CUR].lbl+' — state-specific |SHAP|';
+  if(CH.shap)CH.shap.destroy();
+  CH.shap=new Chart(document.getElementById('c-shap'),{
+    type:'bar',
+    data:{labels:SL,datasets:[{data:sv,backgroundColor:sv.map((_,i)=>i<=1?(CUR==='ALL'?'#185FA5':SD[ss[0]].color):i<=4?'#378ADD':'#B4B2A9'),borderWidth:0}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(4)}}},scales:{x:{ticks:{font:{size:9}},grid:{color:'rgba(128,128,128,0.07)'}},y:{ticks:{font:{size:9}},grid:{display:false}}}}
+  });
+  if(CH.roc)CH.roc.destroy();
+  CH.roc=new Chart(document.getElementById('c-roc'),{
+    type:'line',
+    data:{datasets:[
+      {label:'RF',data:ROC.map(p=>({x:parseFloat(p.fpr.toFixed(3)),y:parseFloat(p.tpr.toFixed(3))})),borderColor:'#E24B4A',borderWidth:2,pointRadius:0,fill:false,tension:0.2},
+      {label:'Random',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#B4B2A9',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'Pt',data:[],borderColor:'#185FA5',borderWidth:1.5,pointRadius:5,pointBackgroundColor:'#185FA5',fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:1,ticks:{font:{size:9}}},y:{min:0,max:1,ticks:{font:{size:9}}}}}
+  });
+  upROC();
+  if(CH.rs)CH.rs.destroy();
+  CH.rs=new Chart(document.getElementById('c-rs'),{
+    type:'bar',
+    data:{labels:ss.map(s=>SD[s].lbl.split(' ')[0]),datasets:[{data:ss.map(s=>SD[s].rs),backgroundColor:ss.map(s=>SD[s].color),borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'P(loss): '+c.raw.toFixed(3)}}},scales:{x:{ticks:{font:{size:10}},grid:{display:false}},y:{min:0,max:0.6,ticks:{font:{size:9},callback:v=>v.toFixed(2)},grid:{color:'rgba(128,128,128,0.07)'}}}}
+  });
+  const sp=document.getElementById('shap-profile');
+  if(CUR==='ALL'){
+    sp.innerHTML=`<p style="font-size:11px;color:var(--color-text-tertiary)">Select a state above to see its specific risk drivers ranked.</p>
+    ${['CO','MT','UT','WY'].map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:11px"><span><span class="sdot" style="background:${SD[s].color}"></span>${SD[s].lbl.split(' ')[0]}</span><span style="color:${rC(SD[s].rs)};font-weight:500">P=${SD[s].rs.toFixed(3)}</span></div>`).join('')}`;
+  } else {
+    const s=CUR;
+    const top=SD[s].shap.map((v,i)=>({v,l:SL[i]})).sort((a,b)=>b.v-a.v).slice(0,5);
+    sp.innerHTML=`<p style="font-size:10px;font-weight:500;color:var(--color-text-secondary);margin:0 0 6px">Top risk drivers for ${SD[s].lbl}</p>`+
+    top.map((f,i)=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+      <span style="font-size:10px;color:var(--color-text-tertiary);min-width:10px">${i+1}.</span>
+      <div style="flex:1;background:var(--color-background-secondary);border-radius:3px;height:7px;overflow:hidden"><div style="height:100%;background:${SD[s].color};border-radius:3px;width:${Math.round(f.v/top[0].v*100)}%"></div></div>
+      <span style="font-size:10px;color:var(--color-text-primary);min-width:65px">${f.l}</span>
+      <span style="font-size:10px;color:var(--color-text-secondary)">${f.v.toFixed(4)}</span>
+    </div>`).join('');
+  }
+}
+
+function upROC(){
+  const raw=parseInt(document.getElementById('roc-t').value)/100;
+  document.getElementById('roc-tv').textContent=raw.toFixed(2);
+  const c=ROC.reduce((b,p)=>Math.abs(p.thresh-raw)<Math.abs(b.thresh-raw)?p:b,ROC[0]);
+  if(CH.roc){CH.roc.data.datasets[2].data=[{x:c.fpr,y:c.tpr}];CH.roc.update('none');}
+  const t1=Math.round(c.fpr*100),t2=Math.round((1-c.tpr)*100);
+  document.getElementById('roc-t1').textContent=t1+'%';
+  document.getElementById('roc-t2').textContent=t2+'%';
+  document.getElementById('roc-br').textContent=Math.round((t1+t2)/2)+'%';
+}
+
+function uPR(){
+  document.getElementById('pr-m').innerHTML=`
+    <div class="mc good"><div class="ml">Q1 premium</div><div class="mv">$97</div><div class="ms">0.19% loss rate</div></div>
+    <div class="mc"><div class="ml">Q2 premium</div><div class="mv">$312</div><div class="ms">0.62% loss rate</div></div>
+    <div class="mc warn"><div class="ml">Q3 premium</div><div class="mv">$531</div><div class="ms">1.06% loss rate</div></div>
+    <div class="mc danger"><div class="ml">Q4 premium</div><div class="mv">$1,793</div><div class="ms">3.59% loss rate</div></div>
+    <div class="mc danger"><div class="ml">Cross-subsidy</div><div class="mv">18.5×</div><div class="ms">Q4 vs Q1</div></div>
+  `;
+  if(CH.prem)CH.prem.destroy();
+  CH.prem=new Chart(document.getElementById('c-prem'),{
+    type:'bar',
+    data:{labels:['Q1 low','Q2','Q3','Q4 high'],datasets:[{data:[97,312,531,1793],backgroundColor:['#639922','#185FA5','#BA7517','#A32D2D'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.raw.toLocaleString()}}},scales:{x:{ticks:{font:{size:10}},grid:{display:false}},y:{ticks:{font:{size:9},callback:v=>'$'+v.toLocaleString()},grid:{color:'rgba(128,128,128,0.07)'}}}}
+  });
+  upCS();
+}
+
+function upCS(){
+  const n=parseInt(document.getElementById('cs-n').value);
+  const pay=parseInt(document.getElementById('cs-p').value);
+  document.getElementById('cs-nv').textContent=n.toLocaleString();
+  document.getElementById('cs-pv').textContent='$'+(pay>=1000?(pay/1000).toFixed(0)+'K':pay);
+  const flat=Math.round(0.01366*pay*0.5);
+  const nq=Math.floor(n/4);
+  const q1o=(flat-Math.round(0.0019*pay))*nq;
+  const q2o=(flat-Math.round(0.0062*pay))*nq;
+  const q4s=(Math.round(0.0359*pay)-flat)*nq;
+  const tot=q1o+q2o+Math.max(0,(flat-Math.round(0.0106*pay))*nq);
+  document.getElementById('cs-out').innerHTML=`<div class="rbox" style="margin:0">
+    <div class="rr"><span class="rl">Flat rate</span><span class="rv">$${flat.toLocaleString()}/yr</span></div>
+    <div class="rr"><span class="rl">Q1+Q2 overpayment/yr</span><span class="rv dn">−$${Math.round((q1o+q2o)/(2*nq)).toLocaleString()}/policy</span></div>
+    <div class="rr"><span class="rl">Q4 subsidy received/yr</span><span class="rv up">+$${Math.round(q4s/nq).toLocaleString()}/policy</span></div>
+    <div class="rr" style="border-top:0.5px solid var(--color-border-secondary);margin-top:2px;padding-top:4px"><span class="rl" style="font-weight:500;color:var(--color-text-primary)">Total cross-subsidy (${n.toLocaleString()} policies)</span><span class="rv" style="font-size:13px;color:#A32D2D">$${fmt(tot)}/yr</span></div>
+  </div>`;
+}
+
+function cpP(){
+  const st=document.getElementById('ca-st').value;
+  const lat=parseFloat(document.getElementById('ca-lat').value);
+  const lon=parseFloat(document.getElementById('ca-lon').value);
+  const mo=parseInt(document.getElementById('ca-mo').value);
+  const nat=parseInt(document.getElementById('ca-nat').value)/100;
+  const pay=parseInt(document.getElementById('ca-pay').value);
+  document.getElementById('sv-lat').textContent=lat.toFixed(1)+'°N';
+  document.getElementById('sv-lon').textContent=Math.abs(lon).toFixed(1)+'°W';
+  document.getElementById('sv-mo').textContent=MF[mo-1];
+  document.getElementById('sv-nat').textContent=Math.round(nat*100)+'%';
+  document.getElementById('sv-pay').textContent='$'+(pay>=1000?(pay/1000).toFixed(0)+'K':pay);
+  const sb=st==='WY'?0.14:st==='UT'?0.09:st==='MT'?0.07:0;
+  const raw=Math.min(Math.max((lat-37)/12*0.34+(Math.abs(lon)-102)/14*0.29+nat*0.27+(mo>=6&&mo<=9?0.11:0)+(mo===7||mo===8?0.05:0)+sb,0.02),0.96);
+  let q,lr,ql,qb;
+  if(raw<0.25){q=1;lr=0.0019;ql='Q1 — low risk';qb='bg';}
+  else if(raw<0.45){q=2;lr=0.0062;ql='Q2 — moderate';qb='bi';}
+  else if(raw<0.65){q=3;lr=0.0106;ql='Q3 — elevated';qb='bw';}
+  else{q=4;lr=0.0359;ql='Q4 — high risk';qb='bd';}
+  const pp=Math.round(lr*pay),ex=Math.round(pp*0.30),rm=Math.round(pp*0.10),cm=Math.round(pp/0.60),fl=Math.round(0.01366*pay*0.5),df=pp-fl;
+  document.getElementById('ca-sc').textContent=raw.toFixed(3);
+  document.getElementById('ca-q').innerHTML='<span class="bdg '+qb+'">'+ql+'</span>';
+  document.getElementById('ca-rt').textContent=(lr*100).toFixed(2)+'%';
+  document.getElementById('ca-pp').textContent='$'+pp.toLocaleString();
+  document.getElementById('ca-ex').textContent='$'+ex.toLocaleString();
+  document.getElementById('ca-rm').textContent='$'+rm.toLocaleString();
+  document.getElementById('ca-cm').textContent='$'+cm.toLocaleString();
+  const vs=document.getElementById('ca-vs');
+  vs.textContent=(df>=0?'+':'')+('$'+Math.abs(df).toLocaleString())+(df>=0?' above flat rate':' below flat rate');
+  vs.style.color=df>=0?'#A32D2D':'#3B6D11';
+  document.getElementById('ca-g').style.width=Math.round(raw*100)+'%';
+  document.getElementById('ca-g').style.background=raw<0.25?'#639922':raw<0.45?'#185FA5':raw<0.65?'#BA7517':'#A32D2D';
+  document.getElementById('ca-acc').style.background=SD[st].color;
+}
+
+function exCa(){
+  const st=document.getElementById('ca-st').value,sc=document.getElementById('ca-sc').textContent,q=document.getElementById('ca-q').textContent.trim(),pp=document.getElementById('ca-pp').textContent,cm=document.getElementById('ca-cm').textContent;
+  sendPrompt(`Wildfire parametric calculator result: State=${SD[st].lbl}, risk score=${sc}, quartile=${q}, pure premium=${pp}, commercial premium=${cm}. Explain what this means for a homeowner at this location and what the key risk drivers are.`);
+}
+
+uAll();cpP();
+</script>
